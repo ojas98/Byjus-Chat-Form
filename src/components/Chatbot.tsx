@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import sendButtonImage from "../assets/Send.png";
 import logo1 from "../assets/Logo.png";
 
@@ -10,41 +10,44 @@ type MessageType = {
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [userInput, setUserInput] = useState<string>("");
+  const hasRun = useRef(false);
 
   const computerOperators = ["Aditi", "Soutik", "Steven", "Lesley"];
 
-  const getRandomOperator = () => {
-    const randomIndex = Math.floor(Math.random() * computerOperators.length);
-    return computerOperators[randomIndex];
+  const getRandomOperator = () =>
+    computerOperators[Math.floor(Math.random() * computerOperators.length)];
+
+  const addUserMessage = (text: string) => {
+    const userMessage: MessageType = { text, sender: "user" };
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserInput(e.target.value);
+  const addComputerTypingMessage = () => {
+    const computerTypingMessage: MessageType = {
+      text: `${getRandomOperator()} is typing...`,
+      sender: "computer-typing",
+    };
+    setMessages((prevMessages) => [...prevMessages, computerTypingMessage]);
   };
+
+  const addComputerResponseMessage = (text: string) => {
+    const computerResponse: MessageType = { text, sender: "computer" };
+    setMessages((prevMessages) =>
+      prevMessages
+        .filter((msg) => msg.sender !== "computer-typing")
+        .concat(computerResponse)
+    );
+  };
+
   const handleSendMessage = () => {
     if (userInput.trim() !== "") {
-      const userMessage: MessageType = { text: userInput, sender: "user" };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
+      addUserMessage(userInput);
 
-      // Simulate computer response after a delay
       setTimeout(() => {
-        const computerTypingMessage: MessageType = {
-          text: `${getRandomOperator()} is typing...`,
-          sender: "computer-typing",
-        };
-        setMessages((prevMessages) => [...prevMessages, computerTypingMessage]);
+        addComputerTypingMessage();
 
-        // Simulate another delay before the actual response
         setTimeout(() => {
-          const actualResponse: MessageType = {
-            text: `Please share your Email ID.`,
-            sender: "computer",
-          };
-          // Remove the "is typing..." message
-          setMessages((prevMessages) =>
-            prevMessages.filter((msg) => msg.sender !== "computer-typing")
-          );
-          setMessages((prevMessages) => [...prevMessages, actualResponse]);
+          addComputerResponseMessage("Please share your Email ID.");
         }, 1000); // Adjust the delay as needed
       }, 500);
     }
@@ -58,30 +61,21 @@ const Chatbot: React.FC = () => {
   };
 
   useEffect(() => {
-    // Initial computer message
-    const initialOperator = getRandomOperator();
-    setMessages([
-      {
-        text: `Hi! I'm ${initialOperator} from BYJU’S. I am here to help you book your free demo class.`,
-        sender: "computer",
-      },
-      {
-        text: `${initialOperator} is typing...`,
-        sender: "computer-typing",
-      },
-    ]);
+    if (!hasRun.current) {
+      const initialOperator = getRandomOperator();
+      setMessages([
+        {
+          text: `Hi! I'm ${initialOperator} from BYJU’S. I am here to help you book your free demo class.`,
+          sender: "computer",
+        },
+        { text: `${initialOperator} is typing...`, sender: "computer-typing" },
+      ]);
 
-    setTimeout(() => {
-      const actualResponse: MessageType = {
-        text: `Please share your Email ID.`,
-        sender: "computer",
-      };
-      // I remove the "is typing..." message
-      setMessages((prevMessages) =>
-        prevMessages.filter((msg) => msg.sender !== "computer-typing")
-      );
-      setMessages((prevMessages) => [...prevMessages, actualResponse]);
-    }, 2000); // Adjust the delay
+      setTimeout(() => {
+        addComputerResponseMessage("Please share your Email ID.");
+      }, 2000); // Adjust the delay
+      hasRun.current = true;
+    }
   }, []);
 
   return (
@@ -107,7 +101,7 @@ const Chatbot: React.FC = () => {
           <input
             type="text"
             value={userInput}
-            onChange={handleInputChange}
+            onChange={(e) => setUserInput(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Type here..."
             className="input-field"
