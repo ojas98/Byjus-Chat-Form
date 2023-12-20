@@ -2,23 +2,44 @@ import React, { useState, useEffect } from "react";
 import sendButtonImage from "../assets/Send.png";
 import logo1 from "../assets/Logo.png";
 
-const Chatbot: React.FC = () => {
-  const [messages, setMessages] = useState<
-    { text: string; sender: "user" | "computer" }[]
-  >([]);
+type MessageType = {
+  text: string;
+  sender: "user" | "computer";
+};
 
-  const [inputValue, setInputValue] = useState<string>("");
+const Chatbot: React.FC = () => {
+  const [messages, setMessages] = useState<MessageType[]>([]);
+  const [userInput, setUserInput] = useState<string>("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    setUserInput(e.target.value);
   };
 
   const handleSendMessage = () => {
-    setMessages([...messages, { text: inputValue, sender: "user" }]);
-    setInputValue("");
+    if (userInput.trim() !== "") {
+      const userMessage: MessageType = { text: userInput, sender: "user" };
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
+
+      // Simulate computer response after a delay (you can customize the delay)
+      setTimeout(() => {
+        const computerResponse: MessageType = {
+          text: "Computer response...",
+          sender: "computer",
+        };
+        setMessages((prevMessages) => [...prevMessages, computerResponse]);
+      }, 500);
+    }
+    setUserInput("");
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
+    }
   };
 
   useEffect(() => {
+    // Initial computer message
     setMessages([
       {
         text: "Hi! I'm Aditi from BYJU’S. I am here to help you book your free demo class.",
@@ -43,8 +64,9 @@ const Chatbot: React.FC = () => {
         <div className="input-container">
           <input
             type="text"
-            value={inputValue}
+            value={userInput}
             onChange={handleInputChange}
+            onKeyDown={handleKeyPress} // Add this line
             placeholder="Type here..."
             className="input-field"
           />
