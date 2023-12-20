@@ -1,99 +1,60 @@
-import React, { useState } from 'react';
-
-
-import sendButtonImage from '../assets/Send.png';
-import logo1 from '../assets/Logo.png';
+import React, { useState, useEffect } from "react";
+import sendButtonImage from "../assets/Send.png";
+import logo1 from "../assets/Logo.png";
 
 const Chatbot: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState<string>('');
+  const [messages, setMessages] = useState<
+    { text: string; sender: "user" | "computer" }[]
+  >([]);
+
+  const [inputValue, setInputValue] = useState<string>("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
   const handleSendMessage = () => {
-   
-    setMessages([...messages, inputValue]);
-    setInputValue('');
+    setMessages([...messages, { text: inputValue, sender: "user" }]);
+    setInputValue("");
   };
 
-  return (
-    
-    <div
-      style={{
-        width: '428px',
-        height: '841px',
-        borderRadius: '20px',
-        background: '#FFF',
-        overflow: 'hidden',
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-        margin: 'auto', 
-        position: 'absolute',
-        top: '50%', 
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-      }}
-    >
-     
-      <div
-        style={{
-          padding: '20px',
-          height: '100%',
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
-           <div style={{ textAlign: 'center', padding: '20px', zIndex: '0',}}>
-        <img src={logo1} alt="Logo 1" style={{ width: '303px', height: '51.42px' }} />
-      </div>
+  useEffect(() => {
+    setMessages([
+      {
+        text: "Hi! I'm Aditi from BYJU’S. I am here to help you book your free demo class.",
+        sender: "computer",
+      },
+    ]);
+  }, []);
 
-        <div style={{ overflowY: 'auto', flex: 1, color: 'black' }}>
+  return (
+    <div className="chatbot-container">
+      <div className="chatbot-content">
+        <div className="logo-container">
+          <img src={logo1} alt="Logo 1" className="logo-image" />
+        </div>
+        <div className="message-container">
           {messages.map((message, index) => (
-            <div key={index}>{message}</div>
+            <div key={index} className={`chat-message ${message.sender}`}>
+              {message.text}
+            </div>
           ))}
         </div>
-        <div style={{ marginTop: '10px', display: 'flex' }}>
+        <div className="input-container">
           <input
             type="text"
             value={inputValue}
             onChange={handleInputChange}
             placeholder="Type here..."
-            style={{
-              display: 'flex',
-              width: '306px',
-              height: '60px',
-              padding: '0px 200px 0px 16px',
-              alignItems: 'center',
-              flexShrink: 0,
-              borderRadius: '17px',
-              background: '#FAFAFA',
-              boxShadow: '3.766px 3.766px 7.532px 0px rgba(212, 192, 192, 0.25)',
-              border: '1px solid #ccc', 
-              boxSizing: 'border-box',
-              color: 'black', 
-              outline: 'none', 
-            }}
+            className="input-field"
           />
           <button
             onClick={handleSendMessage}
-            style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '17px',
-              background: `url(${sendButtonImage}) center/cover no-repeat`,
-              marginLeft: '10px',
-              cursor: 'pointer',
-              border: 'none',
-              outline: 'none',
-            }}
+            className="send-button"
+            style={{ backgroundImage: `url(${sendButtonImage})` }}
           />
         </div>
-     
       </div>
-
     </div>
   );
 };

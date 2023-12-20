@@ -1,3 +1,107 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+.chatbot-container {
+  width: 428px;
+  height: 841px;
+  border-radius: 20px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.chatbot-content {
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.logo-container {
+  text-align: center;
+  padding: 20px;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+}
+
+.logo-image {
+  width: 303px;
+  height: 51.42px;
+}
+
+.message-container {
+  overflow-y: auto;
+  flex: 1;
+  color: rgb(0, 0, 0);
+}
+
+.input-container {
+  margin-top: 10px;
+  display: flex;
+}
+
+.input-field {
+  flex: 1;
+  height: 60px;
+  padding: 0px 16px;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 17px;
+  background: #fafafa;
+  box-shadow: 3.766px 3.766px 7.532px 0px rgba(212, 192, 192, 0.25);
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  color: black;
+  outline: none;
+}
+
+.send-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 17px;
+  background: url("../assets/Send.png") center/cover no-repeat;
+  margin-left: 10px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.message-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Align messages to the bottom of the container */
+}
+
+.chat-message {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.user {
+  width: 279px;
+  height: 59px;
+  flex-shrink: 0;
+  border-radius: 19px 19px 0px 19px;
+  background: #5322ff;
+  align-self: flex-end;
+  color: white;
+}
+
+.computer {
+  width: 308px;
+  height: 78px;
+  flex-shrink: 0;
+  border-radius: 19px 19px 19px 0px;
+  background: #f5f5f5;
+}
