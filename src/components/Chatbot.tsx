@@ -73,7 +73,7 @@ const Chatbot: React.FC = () => {
 
       setTimeout(() => {
         addComputerResponseMessage("Please share your Email ID.");
-      }, 2000); // Adjust the delay
+      }, 2000); // Adjust the delay as needed to publish the Email ID
       hasRun.current = true;
     }
   }, []);
