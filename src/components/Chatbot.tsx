@@ -1,6 +1,9 @@
+// Chatbot.tsx
 import React, { useState, useEffect, useRef } from "react";
-import sendButtonImage from "../assets/Send.png";
-import logo1 from "../assets/Logo.png";
+import ChatbotContent from "./ChatbotContent";
+import Card from "./Card/Card";
+import CardHeader from "./Card/CardHeader";
+import CardBody from "./Card/CardBody";
 
 type MessageType = {
   text: string;
@@ -48,7 +51,7 @@ const Chatbot: React.FC = () => {
 
         setTimeout(() => {
           addComputerResponseMessage("Please share your Email ID.");
-        }, 1000); // Adjust the delay as needed
+        }, 1000);
       }, 500);
     }
     setUserInput("");
@@ -73,47 +76,27 @@ const Chatbot: React.FC = () => {
 
       setTimeout(() => {
         addComputerResponseMessage("Please share your Email ID.");
-      }, 2000); // Adjust the delay as needed to publish the Email ID
+      }, 2000);
       hasRun.current = true;
     }
-  }, []);
+  }, [getRandomOperator]);
 
   return (
-    <div className="chatbot-container">
-      <div className="chatbot-content">
-        <div className="logo-container">
-          <img src={logo1} alt="Logo 1" className="logo-image" />
-        </div>
-        <div className="message-container">
-          {messages.map((message, index) => (
-            <div key={index} className={`chat-message ${message.sender}`}>
-              {message.sender === "computer-typing" ? (
-                <div style={{ fontStyle: "italic", color: "#999" }}>
-                  {message.text}
-                </div>
-              ) : (
-                message.text
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="input-container">
-          <input
-            type="text"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="Type here..."
-            className="input-field"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="send-button"
-            style={{ backgroundImage: `url(${sendButtonImage})` }}
-          />
-        </div>
-      </div>
-    </div>
+    // <div className="chatbot-container">
+    //   <ChatbotContent
+    //     messages={messages}
+    //     userInput={userInput}
+    //     onInputChange={(e) => setUserInput(e.target.value)}
+    //     onInputKeyDown={handleKeyPress}
+    //     onSendMessage={handleSendMessage}
+    //   />
+    // </div>
+    <Card>
+      <CardHeader>
+        <div className="text-brand font-bold text-3xl">Book a Demo Class</div>
+      </CardHeader>
+      <CardBody></CardBody>
+    </Card>
   );
 };
 
