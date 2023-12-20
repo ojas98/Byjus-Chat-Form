@@ -66,7 +66,7 @@ const Chatbot: React.FC = () => {
             type="text"
             value={userInput}
             onChange={handleInputChange}
-            onKeyDown={handleKeyPress} // Add this line
+            onKeyDown={handleKeyPress}
             placeholder="Type here..."
             className="input-field"
           />
