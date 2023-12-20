@@ -4,7 +4,7 @@ import logo1 from "../assets/Logo.png";
 
 type MessageType = {
   text: string;
-  sender: "user" | "computer";
+  sender: "user" | "computer" | "computer-typing";
 };
 
 const Chatbot: React.FC = () => {
@@ -21,28 +21,31 @@ const Chatbot: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInput(e.target.value);
   };
-
   const handleSendMessage = () => {
     if (userInput.trim() !== "") {
       const userMessage: MessageType = { text: userInput, sender: "user" };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-      // Simulate computer response after a delay (you can customize the delay)
+      // Simulate computer response after a delay
       setTimeout(() => {
-        const computerResponse: MessageType = {
+        const computerTypingMessage: MessageType = {
           text: `${getRandomOperator()} is typing...`,
-          sender: "computer",
+          sender: "computer-typing",
         };
-        setMessages((prevMessages) => [...prevMessages, computerResponse]);
+        setMessages((prevMessages) => [...prevMessages, computerTypingMessage]);
 
         // Simulate another delay before the actual response
         setTimeout(() => {
           const actualResponse: MessageType = {
-            text: `Hi! I'm ${getRandomOperator()} from BYJU’S. I am here to help you.`,
+            text: `Please share your Email ID.`,
             sender: "computer",
           };
+          // Remove the "is typing..." message
+          setMessages((prevMessages) =>
+            prevMessages.filter((msg) => msg.sender !== "computer-typing")
+          );
           setMessages((prevMessages) => [...prevMessages, actualResponse]);
-        }, 1000);
+        }, 1000); // Adjust the delay as needed
       }, 500);
     }
     setUserInput("");
@@ -59,10 +62,26 @@ const Chatbot: React.FC = () => {
     const initialOperator = getRandomOperator();
     setMessages([
       {
-        text: `Hi! I'm ${initialOperator} from BYJU’S. I am here to help you book your free demo class. `,
+        text: `Hi! I'm ${initialOperator} from BYJU’S. I am here to help you book your free demo class.`,
         sender: "computer",
       },
+      {
+        text: `${initialOperator} is typing...`,
+        sender: "computer-typing",
+      },
     ]);
+
+    setTimeout(() => {
+      const actualResponse: MessageType = {
+        text: `Please share your Email ID.`,
+        sender: "computer",
+      };
+      // I remove the "is typing..." message
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.sender !== "computer-typing")
+      );
+      setMessages((prevMessages) => [...prevMessages, actualResponse]);
+    }, 2000); // Adjust the delay
   }, []);
 
   return (
@@ -74,7 +93,13 @@ const Chatbot: React.FC = () => {
         <div className="message-container">
           {messages.map((message, index) => (
             <div key={index} className={`chat-message ${message.sender}`}>
-              {message.text}
+              {message.sender === "computer-typing" ? (
+                <div style={{ fontStyle: "italic", color: "#999" }}>
+                  {message.text}
+                </div>
+              ) : (
+                message.text
+              )}
             </div>
           ))}
         </div>
