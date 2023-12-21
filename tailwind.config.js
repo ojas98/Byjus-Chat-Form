@@ -11,7 +11,11 @@ export default {
         DEFAULT: "#F5F5F5",
         foreground: "#6A6A86",
       },
-      extend: {},
+    },
+    extend: {
+      gridTemplateColumns: {
+        radio: "repeat(auto-fit,minmax(var(--min-col-width, 6rem), 1fr))",
+      },
     },
   },
   plugins: [],

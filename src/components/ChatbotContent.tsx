@@ -24,7 +24,6 @@ const ChatbotContent: React.FC<ChatbotContentProps> = ({
   onSendMessage,
 }) => (
   <div className="chatbot-content">
-    
     <div className="message-container">
       {messages.map((message, index) => (
         <ChatMessage key={index} {...message} />
