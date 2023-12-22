@@ -7,7 +7,7 @@ import DateRadioInput from "./DateRadioInput";
 import TypingMessage from "./TypingMessage";
 import TimeRadioInput from "./TimeRadioInput";
 import RadioQuestionInput from "./RadioQuestionInput";
-
+import { submitData } from "../Chatbot";
 type Inputs =
   | {
       type: "text-input";
@@ -301,6 +301,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
                 onComplete={(email) => {
                   setData((current) => ({ ...current, email }));
                   setIsNextQueued(true);
+                  submitData(data);
                 }}
               />
             );
@@ -319,6 +320,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
                 onComplete={(grade) => {
                   setData((current) => ({ ...current, grade }));
                   setIsNextQueued(true);
+                  submitData(data);
                 }}
               />
             );
@@ -338,6 +340,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
                 onComplete={(date) => {
                   setData((current) => ({ ...current, date }));
                   setIsNextQueued(true);
+                  submitData(data);
                 }}
               />
             );
@@ -374,6 +377,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
                 onComplete={(question) => {
                   setData((current) => ({ ...current, question }));
                   setIsNextQueued(true);
+                  submitData(data);
                 }}
               />
             );
