@@ -39,7 +39,7 @@ const BotTextMessage: React.FC<BotTextMessageProps> = ({ texts }) => {
     <div className="flex flex-row gap-2 p-2">
       <div className="flex flex-col justify-end">
         <img
-          className="rounded-full aspect-square w-10"
+          className="rounded-full aspect-square object-cover w-10"
           src={avatar}
           alt={name}
         />

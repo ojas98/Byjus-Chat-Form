@@ -1,8 +1,9 @@
 import React from "react";
+import customImage from "../BotContext/unsplash_PlikkWB79qs.png";
 
 const botContext = React.createContext({
-  name: "John Doe",
-  avatar: "https://ui-avatars.com/api/?name=John+Doe",
+  name: "Lesley",
+  avatar: customImage,
 });
 
 export function useBotContext() {
