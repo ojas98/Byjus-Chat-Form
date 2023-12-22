@@ -411,7 +411,6 @@ const MessageController: React.FC<MessageControllerProps> = ({
 function replacePlaceholders(text: string, data: UserData): string {
   text = text.replace(/{time}/g, data.time || "");
   text = text.replace(/{date}/g, data.date || "");
-
   return text;
 }
 
