@@ -5,6 +5,8 @@ import TextInput from "./TextInput";
 import GridRadioInput from "./GridRadioInput";
 import DateRadioInput from "./DateRadioInput";
 import TypingMessage from "./TypingMessage";
+import TimeRadioInput from "./TimeRadioInput";
+import RadioQuestionInput from "./RadioQuestionInput";
 
 type Inputs =
   | {
@@ -28,6 +30,13 @@ type Inputs =
     }
   | {
       type: "time-input";
+      data: {
+        target: keyof UserData;
+        items: Array<string>;
+      };
+    }
+  | {
+      type: "question-input";
       data: {
         target: keyof UserData;
         items: Array<string>;
@@ -149,6 +158,47 @@ const STATIC_FLOW: Flow = [
     data: {
       owner: "bot",
       text: "Please confirm your booking for {time} on {date}.",
+    },
+  },
+  {
+    type: "question-input",
+    data: {
+      target: "question",
+      items: ["Confirm"],
+    },
+  },
+  {
+    type: "text",
+    data: {
+      owner: "bot",
+      text: "Great! Your demo class has been booked for {time} on {date}.",
+    },
+  },
+  //   {
+  //     type: "text",
+  //     data: {
+  //       owner: "bot",
+  //       text: "To ensure you don't miss out on your upcoming demo class, could you please share your contact number with us?",
+  //     },
+  //   },
+  //   {
+  //     type: "text-input",
+  //     data: {
+  //       target: "number",
+  //     },
+  //   },
+  {
+    type: "text",
+    data: {
+      owner: "bot",
+      text: "Here's a short video on how our 1:1 online math classes work: [https://rb.gy/9ms1qt].",
+    },
+  },
+  {
+    type: "text",
+    data: {
+      owner: "bot",
+      text: "See you in class and have a great day!",
     },
   },
 ];
@@ -300,11 +350,29 @@ const MessageController: React.FC<MessageControllerProps> = ({
               return <TextMessage owner="user" texts={[`${data[target]}`]} />;
             }
             return (
-              <GridRadioInput
+              <TimeRadioInput
                 target={target}
                 items={items}
                 onComplete={(time) => {
                   setData((current) => ({ ...current, time }));
+                  setIsNextQueued(true);
+                }}
+              />
+            );
+          }
+
+          case "question-input": {
+            const { target, items } = item.data;
+
+            if (flow.length - 1 > i) {
+              return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+            }
+            return (
+              <RadioQuestionInput
+                target={target}
+                items={items}
+                onComplete={(question) => {
+                  setData((current) => ({ ...current, question }));
                   setIsNextQueued(true);
                 }}
               />

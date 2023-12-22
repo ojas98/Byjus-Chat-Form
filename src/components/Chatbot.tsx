@@ -24,6 +24,7 @@ const Chatbot: React.FC = () => {
     grade: "",
     date: "",
     time: "",
+    question: "",
   });
 
   return (

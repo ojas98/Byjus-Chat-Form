@@ -5,6 +5,8 @@ export interface UserData {
   grade: string;
   date: string;
   time: string;
+  question: string;
+  // number: string;
 }
 
 interface UserDataHandler {
