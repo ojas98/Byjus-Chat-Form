@@ -27,6 +27,13 @@ type Inputs =
       };
     }
   | {
+      type: "time-input";
+      data: {
+        target: keyof UserData;
+        items: Array<string>;
+      };
+    }
+  | {
       type: "typing";
     };
 
@@ -103,7 +110,7 @@ const STATIC_FLOW: Flow = [
     type: "text",
     data: {
       owner: "bot",
-      text: "Now, select date",
+      text: "Now, select a date",
     },
   },
   {
@@ -117,6 +124,31 @@ const STATIC_FLOW: Flow = [
     data: {
       owner: "bot",
       text: "Now, select a time slot",
+    },
+  },
+  {
+    type: "time-input",
+    data: {
+      target: "time",
+      items: [
+        "09:00 am",
+        "10:00 am",
+        "11:00 am",
+        "12:00 pm",
+        "01:00 pm",
+        "02:00 pm",
+        "03:00 pm",
+        "04:00 pm",
+        "05:00 pm",
+      ],
+    },
+  },
+
+  {
+    type: "text",
+    data: {
+      owner: "bot",
+      text: "Please confirm your booking for {time} on {date}.",
     },
   },
 ];
@@ -164,7 +196,6 @@ interface MessageControllerProps {
 const MessageController: React.FC<MessageControllerProps> = ({
   onComplete,
 }) => {
-  // index used to slice which is non inclusive of end - hence starts at 1
   const [queueIndex, setQueueIndex] = React.useState(1);
   const [isNextQueued, setIsNextQueued] = React.useState(false);
   const { data, setData } = useUserDataContext();
@@ -200,9 +231,12 @@ const MessageController: React.FC<MessageControllerProps> = ({
             );
           }
           case "text": {
-            return (
-              <TextMessage owner={item.data.owner} texts={item.data.texts} />
+            const { owner, texts } = item.data;
+            const formattedTexts = texts.map((text) =>
+              replacePlaceholders(text, data)
             );
+
+            return <TextMessage owner={owner} texts={formattedTexts} key={i} />;
           }
 
           case "text-input": {
@@ -259,6 +293,23 @@ const MessageController: React.FC<MessageControllerProps> = ({
             );
           }
 
+          case "time-input": {
+            const { target, items } = item.data;
+
+            if (flow.length - 1 > i) {
+              return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+            }
+            return (
+              <GridRadioInput
+                target={target}
+                items={items}
+                onComplete={(time) => {
+                  setData((current) => ({ ...current, time }));
+                  setIsNextQueued(true);
+                }}
+              />
+            );
+          }
           default:
             break;
         }
@@ -266,5 +317,12 @@ const MessageController: React.FC<MessageControllerProps> = ({
     </>
   );
 };
+
+function replacePlaceholders(text: string, data: UserData): string {
+  text = text.replace(/{time}/g, data.time || "");
+  text = text.replace(/{date}/g, data.date || "");
+
+  return text;
+}
 
 export default MessageController;
