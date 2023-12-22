@@ -4,6 +4,7 @@ import { UserData, useUserDataContext } from "../../contexts/UserDataContext";
 import TextInput from "./TextInput";
 import GridRadioInput from "./GridRadioInput";
 import DateRadioInput from "./DateRadioInput";
+import TypingMessage from "./TypingMessage";
 
 type Inputs =
   | {
@@ -24,7 +25,11 @@ type Inputs =
       data: {
         target: keyof UserData;
       };
+    }
+  | {
+      type: "typing";
     };
+
 type Flow = Array<
   | {
       type: "text";
@@ -53,6 +58,9 @@ const STATIC_FLOW: Flow = [
       owner: "bot",
       text: "Hi! I'm {botName} from BYJU’S. I am here to help you book your free demo class.",
     },
+  },
+  {
+    type: "typing",
   },
   {
     type: "text",
@@ -186,6 +194,11 @@ const MessageController: React.FC<MessageControllerProps> = ({
     <>
       {flow.map((item, i) => {
         switch (item.type) {
+          case "typing": {
+            return (
+              <TypingMessage key={i} onComplete={() => setIsNextQueued(true)} />
+            );
+          }
           case "text": {
             return (
               <TextMessage owner={item.data.owner} texts={item.data.texts} />
