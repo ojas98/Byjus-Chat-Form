@@ -8,9 +8,9 @@ import { UserData, UserDataContextProvider } from "../contexts/UserDataContext";
 import MessageController from "./Message/MessageController";
 
 const G_FORM_APP =
-  "https://script.google.com/a/macros/byjus.com/s/AKfycbyqqJyipJuWv7OcxBQDj0zVgndcakxYpOOVWBVeKhXBznIGFCx7Xm5OBZDoW8KXAeVQ/exec";
+  "https://script.google.com/macros/s/AKfycbwo8hvSpvR3gKxkU94BQ_pzPYmNde3uvl_9RZr54aVYu8vUUt99BkG72t2ase5sIexIjg/exec";
 
-export async function submitData(data: UserData) {
+async function submitData(data: UserData) {
   try {
     const body = { ...data, sheet: "Sheet4" };
     const response = await fetch(G_FORM_APP, {
@@ -40,10 +40,6 @@ const Chatbot: React.FC = () => {
     question: "",
   });
 
-  React.useEffect(() => {
-    submitData(data);
-  }, [data]);
-
   return (
     <UserDataContextProvider value={{ data, setData }}>
       <Card>
@@ -51,7 +47,11 @@ const Chatbot: React.FC = () => {
           <div className="text-brand font-bold text-3xl">Book a Demo Class</div>
         </CardHeader>
         <CardBody>
-          <MessageController />
+          <MessageController
+            onComplete={() => {
+              submitData(data);
+            }}
+          />
         </CardBody>
       </Card>
     </UserDataContextProvider>
