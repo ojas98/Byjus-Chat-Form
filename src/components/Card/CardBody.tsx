@@ -5,7 +5,7 @@ interface CardBodyProps {
 }
 const CardBody: React.FC<CardBodyProps> = ({ children }) => {
   return (
-    <div className="flex-grow overflow-hidden flex flex-col justify-end p-6 gap-5">
+    <div className="flex-grow overflow-y flex flex-col justify-end p-6 gap-6">
       {children}
     </div>
   );

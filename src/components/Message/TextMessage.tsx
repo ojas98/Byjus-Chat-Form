@@ -17,7 +17,7 @@ const UserTextMessage: React.FC<UserTextMessageProps> = ({ texts }) => {
   const { name: botName } = useBotContext();
   return (
     <div className="flex flex-row justify-end">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-4">
         {texts.map((text, i) => (
           <div
             key={i}
@@ -36,7 +36,7 @@ const BotTextMessage: React.FC<BotTextMessageProps> = ({ texts }) => {
   const { name, avatar } = useBotContext();
 
   return (
-    <div className="flex flex-row gap-1">
+    <div className="flex flex-row gap-2 p-2">
       <div className="flex flex-col justify-end">
         <img
           className="rounded-full aspect-square w-10"

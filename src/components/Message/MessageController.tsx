@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import TextMessage from "./TextMessage";
 import { UserData, useUserDataContext } from "../../contexts/UserDataContext";
 import TextInput from "./TextInput";
@@ -249,6 +249,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
   const [queueIndex, setQueueIndex] = React.useState(1);
   const [isNextQueued, setIsNextQueued] = React.useState(false);
   const { data, setData } = useUserDataContext();
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const flow = React.useMemo(
     () => collapseTexts(STATIC_FLOW.slice(0, queueIndex)),
     [queueIndex]
@@ -272,118 +273,136 @@ const MessageController: React.FC<MessageControllerProps> = ({
     }
   }, [onComplete, queueIndex]);
 
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      // Scroll to the bottom when the component mounts or new messages are added
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [flow]);
   return (
-    <>
-      {flow.map((item, i) => {
-        switch (item.type) {
-          case "typing": {
-            return (
-              <TypingMessage key={i} onComplete={() => setIsNextQueued(true)} />
-            );
-          }
-          case "text": {
-            const { owner, texts } = item.data;
-            const formattedTexts = texts.map((text) =>
-              replacePlaceholders(text, data)
-            );
-
-            return <TextMessage owner={owner} texts={formattedTexts} key={i} />;
-          }
-
-          case "text-input": {
-            const { target } = item.data;
-
-            if (flow.length - 1 > i) {
-              return <TextMessage owner="user" texts={[`${data[target]}`]} />;
-            }
-            return (
-              <TextInput
-                target={item.data.target}
-                onComplete={(email) => {
-                  setData((current) => ({ ...current, email }));
-                  setIsNextQueued(true);
-                }}
-              />
-            );
-          }
-
-          case "radio-input": {
-            const { target, items } = item.data;
-
-            if (flow.length - 1 > i) {
-              return <TextMessage owner="user" texts={[`${data[target]}`]} />;
-            }
-            return (
-              <GridRadioInput
-                target={target}
-                items={items}
-                onComplete={(grade) => {
-                  setData((current) => ({ ...current, grade }));
-                  setIsNextQueued(true);
-                }}
-              />
-            );
-          }
-
-          case "date-radio-input": {
-            if (flow.length - 1 > i) {
+    <div
+      className="overflow-y-auto"
+      ref={chatContainerRef}
+      style={{ maxHeight: "500px" }} // Set a maximum height for scrolling
+    >
+      <>
+        {flow.map((item, i) => {
+          switch (item.type) {
+            case "typing": {
               return (
-                <TextMessage
-                  owner="user"
-                  texts={[`${data[item.data.target]}`]}
+                <TypingMessage
+                  key={i}
+                  onComplete={() => setIsNextQueued(true)}
                 />
               );
             }
-            return (
-              <DateRadioInput
-                onComplete={(date) => {
-                  setData((current) => ({ ...current, date }));
-                  setIsNextQueued(true);
-                }}
-              />
-            );
-          }
+            case "text": {
+              const { owner, texts } = item.data;
+              const formattedTexts = texts.map((text) =>
+                replacePlaceholders(text, data)
+              );
 
-          case "time-input": {
-            const { target, items } = item.data;
-
-            if (flow.length - 1 > i) {
-              return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+              return (
+                <TextMessage owner={owner} texts={formattedTexts} key={i} />
+              );
             }
-            return (
-              <TimeRadioInput
-                target={target}
-                items={items}
-                onComplete={(time) => {
-                  setData((current) => ({ ...current, time }));
-                  setIsNextQueued(true);
-                }}
-              />
-            );
-          }
 
-          case "question-input": {
-            const { target, items } = item.data;
+            case "text-input": {
+              const { target } = item.data;
 
-            if (flow.length - 1 > i) {
-              return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+              if (flow.length - 1 > i) {
+                return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+              }
+              return (
+                <TextInput
+                  target={item.data.target}
+                  onComplete={(email) => {
+                    setData((current) => ({ ...current, email }));
+                    setIsNextQueued(true);
+                  }}
+                />
+              );
             }
-            return (
-              <RadioQuestionInput
-                target={target}
-                items={items}
-                onComplete={(question) => {
-                  setData((current) => ({ ...current, question }));
-                  setIsNextQueued(true);
-                }}
-              />
-            );
+
+            case "radio-input": {
+              const { target, items } = item.data;
+
+              if (flow.length - 1 > i) {
+                return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+              }
+              return (
+                <GridRadioInput
+                  target={target}
+                  items={items}
+                  onComplete={(grade) => {
+                    setData((current) => ({ ...current, grade }));
+                    setIsNextQueued(true);
+                  }}
+                />
+              );
+            }
+
+            case "date-radio-input": {
+              if (flow.length - 1 > i) {
+                return (
+                  <TextMessage
+                    owner="user"
+                    texts={[`${data[item.data.target]}`]}
+                  />
+                );
+              }
+              return (
+                <DateRadioInput
+                  onComplete={(date) => {
+                    setData((current) => ({ ...current, date }));
+                    setIsNextQueued(true);
+                  }}
+                />
+              );
+            }
+
+            case "time-input": {
+              const { target, items } = item.data;
+
+              if (flow.length - 1 > i) {
+                return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+              }
+              return (
+                <TimeRadioInput
+                  target={target}
+                  items={items}
+                  onComplete={(time) => {
+                    setData((current) => ({ ...current, time }));
+                    setIsNextQueued(true);
+                  }}
+                />
+              );
+            }
+
+            case "question-input": {
+              const { target, items } = item.data;
+
+              if (flow.length - 1 > i) {
+                return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+              }
+              return (
+                <RadioQuestionInput
+                  target={target}
+                  items={items}
+                  onComplete={(question) => {
+                    setData((current) => ({ ...current, question }));
+                    setIsNextQueued(true);
+                  }}
+                />
+              );
+            }
+            default:
+              break;
           }
-          default:
-            break;
-        }
-      })}
-    </>
+        })}
+      </>
+    </div>
   );
 };
 
