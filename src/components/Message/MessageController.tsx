@@ -72,7 +72,7 @@ const STATIC_FLOW: Flow = [
     type: "text",
     data: {
       owner: "bot",
-      text: "Hi! I'm {botName} from BYJU’S. I am here to help you book your free demo class.",
+      text: "Hi! I'm {botName} from BYJU’S. I am here to help you book your free math demo class.",
     },
   },
   {
@@ -171,7 +171,7 @@ const STATIC_FLOW: Flow = [
     type: "text",
     data: {
       owner: "bot",
-      text: "Great! Your demo class has been booked for {time} on {date}.",
+      text: "Great! Your math demo class has been booked for {time} on {date}.",
     },
   },
   //   {
@@ -191,7 +191,7 @@ const STATIC_FLOW: Flow = [
     type: "text",
     data: {
       owner: "bot",
-      text: "Here's a short video on how our 1:1 online math classes work: [https://rb.gy/9ms1qt].",
+      text: "Here's a short video on how our 1:1 online math classes work: https://rb.gy/9ms1qt.",
     },
   },
   {
@@ -280,6 +280,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
         chatContainerRef.current.scrollHeight;
     }
   }, [flow]);
+
   return (
     <div
       className="overflow-y-auto"
@@ -397,6 +398,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
                 />
               );
             }
+
             default:
               break;
           }
