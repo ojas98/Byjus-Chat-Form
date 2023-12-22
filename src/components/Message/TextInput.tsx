@@ -27,7 +27,7 @@ const TextInput: React.FC<TextInputProps> = ({ target, onComplete }) => {
     // }
 
     onComplete?.(value);
-    inputRef.current!.value = ""; // Clear input after submission
+    inputRef.current!.value = "";
   };
   return (
     <form className="flex flex-row gap-2" onSubmit={onSubmit}>
