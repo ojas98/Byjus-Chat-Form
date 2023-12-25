@@ -1,5 +1,5 @@
 import React from "react";
-import customImage from "../BotContext/unsplash_PlikkWB79qs.png";
+import customImage from "../BotContext/lesley.png";
 
 const botContext = React.createContext({
   name: "Lesley",

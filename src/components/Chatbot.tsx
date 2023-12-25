@@ -1,6 +1,5 @@
 // Chatbot.tsx
 import React from "react";
-
 import Card from "./Card/Card";
 import CardHeader from "./Card/CardHeader";
 import CardBody from "./Card/CardBody";

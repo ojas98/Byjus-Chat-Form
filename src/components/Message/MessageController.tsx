@@ -164,7 +164,7 @@ const STATIC_FLOW: Flow = [
     type: "question-input",
     data: {
       target: "question",
-      items: ["Confirm"],
+      items: ["Confirm", "Reschedule"],
     },
   },
   {
@@ -248,8 +248,10 @@ const MessageController: React.FC<MessageControllerProps> = ({
 }) => {
   const [queueIndex, setQueueIndex] = React.useState(1);
   const [isNextQueued, setIsNextQueued] = React.useState(false);
+
   const { data, setData } = useUserDataContext();
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
   const flow = React.useMemo(
     () => collapseTexts(STATIC_FLOW.slice(0, queueIndex)),
     [queueIndex]
@@ -381,18 +383,24 @@ const MessageController: React.FC<MessageControllerProps> = ({
               );
             }
 
+            // Inside MessageController component
             case "question-input": {
               const { target, items } = item.data;
 
               if (flow.length - 1 > i) {
                 return <TextMessage owner="user" texts={[`${data[target]}`]} />;
               }
+
               return (
                 <RadioQuestionInput
                   target={target}
                   items={items}
                   onComplete={(question) => {
                     setData((current) => ({ ...current, question }));
+                    setIsNextQueued(true);
+                  }}
+                  onReschedule={() => {
+                    setQueueIndex(4); // Start from queIndex(4)
                     setIsNextQueued(true);
                   }}
                 />
