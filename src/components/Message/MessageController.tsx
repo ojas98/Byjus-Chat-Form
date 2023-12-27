@@ -4,7 +4,6 @@ import { UserData, useUserDataContext } from "../../contexts/UserDataContext";
 import TextInput from "./TextInput";
 import GridRadioInput from "./GridRadioInput";
 import DateRadioInput from "./DateRadioInput";
-import TypingMessage from "./TypingMessage";
 import TimeRadioInput from "./TimeRadioInput";
 import RadioQuestionInput from "./RadioQuestionInput";
 
@@ -41,9 +40,6 @@ type Inputs =
         target: keyof UserData;
         items: Array<string>;
       };
-    }
-  | {
-      type: "typing";
     };
 
 type Flow = Array<
@@ -74,9 +70,6 @@ const STATIC_FLOW: Flow = [
       owner: "bot",
       text: "Hi! I'm {botName} from BYJU’S. I am here to help you book your free math demo class.",
     },
-  },
-  {
-    type: "typing",
   },
   {
     type: "text",
@@ -250,7 +243,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
   const [isNextQueued, setIsNextQueued] = React.useState(false);
 
   const { data, setData } = useUserDataContext();
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const flow = React.useMemo(
     () => collapseTexts(STATIC_FLOW.slice(0, queueIndex)),
@@ -275,31 +268,24 @@ const MessageController: React.FC<MessageControllerProps> = ({
     }
   }, [onComplete, queueIndex]);
 
+  // Scroll to the bottom when the component mounts or new messages are added
   useEffect(() => {
-    if (chatContainerRef.current) {
-      // Scroll to the bottom when the component mounts or new messages are added
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
     }
   }, [flow]);
 
   return (
     <div
-      className="overflow-y-auto"
-      ref={chatContainerRef}
-      style={{ maxHeight: "500px" }} // Set a maximum height for scrolling
+      // Set a maximum height for scrolling
+      className="flex flex-col justify-end p-6 gap-6 min-h-full"
     >
       <>
         {flow.map((item, i) => {
           switch (item.type) {
-            case "typing": {
-              return (
-                <TypingMessage
-                  key={i}
-                  onComplete={() => setIsNextQueued(true)}
-                />
-              );
-            }
             case "text": {
               const { owner, texts } = item.data;
               const formattedTexts = texts.map((text) =>
@@ -412,6 +398,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
           }
         })}
       </>
+      <div ref={chatEndRef}></div>
     </div>
   );
 };

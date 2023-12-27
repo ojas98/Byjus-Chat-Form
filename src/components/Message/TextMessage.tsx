@@ -36,7 +36,7 @@ const BotTextMessage: React.FC<BotTextMessageProps> = ({ texts }) => {
   const { name, avatar } = useBotContext();
 
   return (
-    <div className="flex flex-row gap-2 p-2">
+    <div className="grid grid-rows-1 grid-cols-[2rem,_auto] flex-row gap-2">
       <div className="flex flex-col justify-end">
         <img
           className="rounded-full aspect-square object-cover w-10"

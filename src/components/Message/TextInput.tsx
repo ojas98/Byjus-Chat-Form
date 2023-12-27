@@ -30,7 +30,7 @@ const TextInput: React.FC<TextInputProps> = ({ target, onComplete }) => {
     inputRef.current!.value = "";
   };
   return (
-    <form className="flex flex-row gap-2" onSubmit={onSubmit}>
+    <form className="flex flex-row gap-2 w-full" onSubmit={onSubmit}>
       <input
         className="flex-grow p-4 items-center flex rounded-2xl bg-accent"
         type={target === "email" ? "email" : "text"}
@@ -39,7 +39,7 @@ const TextInput: React.FC<TextInputProps> = ({ target, onComplete }) => {
       />
       <button
         type="submit"
-        className="aspect-square cursor-pointer border-none outline-none"
+        className="aspect-square cursor-pointer border-none outline-none w-10"
       >
         <img src={sendButtonImage} alt="Send" />
       </button>
