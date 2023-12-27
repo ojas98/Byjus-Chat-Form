@@ -1,16 +1,11 @@
 import React from "react";
-import { UserData } from "../../contexts/UserDataContext";
 
 interface RadioQuestionInputProps {
-  target: keyof UserData;
-  items: Array<string>;
   onComplete?: (value: string) => void;
   onReschedule?: () => void;
 }
 
 const RadioQuestionInput: React.FC<RadioQuestionInputProps> = ({
-  // target,
-  items,
   onComplete,
   onReschedule,
 }) => {
@@ -23,8 +18,8 @@ const RadioQuestionInput: React.FC<RadioQuestionInputProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-3 grid-rows-3 gap-2 ml-11 max-w-md">
-      {items.map((item) => (
+    <div className="grid grid-cols-2 grid-rows-1 gap-2 ml-11 max-w-md">
+      {["Confirm", "Reschedule"].map((item) => (
         <button
           key={item}
           onClick={() => handleOptionClick(item)}

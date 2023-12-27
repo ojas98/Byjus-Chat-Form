@@ -36,10 +36,6 @@ type Inputs =
     }
   | {
       type: "question-input";
-      data: {
-        target: keyof UserData;
-        items: Array<string>;
-      };
     };
 
 type Flow = Array<
@@ -155,10 +151,6 @@ const STATIC_FLOW: Flow = [
   },
   {
     type: "question-input",
-    data: {
-      target: "question",
-      items: ["Confirm", "Reschedule"],
-    },
   },
   {
     type: "text",
@@ -167,19 +159,19 @@ const STATIC_FLOW: Flow = [
       text: "Great! Your math demo class has been booked for {time} on {date}.",
     },
   },
-  //   {
-  //     type: "text",
-  //     data: {
-  //       owner: "bot",
-  //       text: "To ensure you don't miss out on your upcoming demo class, could you please share your contact number with us?",
-  //     },
-  //   },
-  //   {
-  //     type: "text-input",
-  //     data: {
-  //       target: "number",
-  //     },
-  //   },
+  {
+    type: "text",
+    data: {
+      owner: "bot",
+      text: "To ensure you don't miss out on your upcoming demo class, could you please share your contact number with us?",
+    },
+  },
+  {
+    type: "text-input",
+    data: {
+      target: "phone",
+    },
+  },
   {
     type: "text",
     data: {
@@ -293,7 +285,11 @@ const MessageController: React.FC<MessageControllerProps> = ({
               );
 
               return (
-                <TextMessage owner={owner} texts={formattedTexts} key={i} />
+                <TextMessage
+                  owner={owner}
+                  texts={formattedTexts}
+                  key={`${owner}-${formattedTexts.join(".")}`}
+                />
               );
             }
 
@@ -301,13 +297,20 @@ const MessageController: React.FC<MessageControllerProps> = ({
               const { target } = item.data;
 
               if (flow.length - 1 > i) {
-                return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+                return (
+                  <TextMessage
+                    owner="user"
+                    key={`user-${target}`}
+                    texts={[`${data[target]}`]}
+                  />
+                );
               }
               return (
                 <TextInput
-                  target={item.data.target}
-                  onComplete={(email) => {
-                    setData((current) => ({ ...current, email }));
+                  key={target}
+                  target={target}
+                  onComplete={(value) => {
+                    setData((current) => ({ ...current, [target]: value }));
                     setIsNextQueued(true);
                   }}
                 />
@@ -318,10 +321,17 @@ const MessageController: React.FC<MessageControllerProps> = ({
               const { target, items } = item.data;
 
               if (flow.length - 1 > i) {
-                return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+                return (
+                  <TextMessage
+                    owner="user"
+                    key={`user-${target}`}
+                    texts={[`${data[target]}`]}
+                  />
+                );
               }
               return (
                 <GridRadioInput
+                  key={target}
                   target={target}
                   items={items}
                   onComplete={(grade) => {
@@ -336,6 +346,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
               if (flow.length - 1 > i) {
                 return (
                   <TextMessage
+                    key="user-date"
                     owner="user"
                     texts={[`${data[item.data.target]}`]}
                   />
@@ -343,6 +354,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
               }
               return (
                 <DateRadioInput
+                  key={item.data.target}
                   onComplete={(date) => {
                     setData((current) => ({ ...current, date }));
                     setIsNextQueued(true);
@@ -355,10 +367,17 @@ const MessageController: React.FC<MessageControllerProps> = ({
               const { target, items } = item.data;
 
               if (flow.length - 1 > i) {
-                return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+                return (
+                  <TextMessage
+                    owner="user"
+                    key={`user-${target}`}
+                    texts={[`${data[target]}`]}
+                  />
+                );
               }
               return (
                 <TimeRadioInput
+                  key={target}
                   target={target}
                   items={items}
                   onComplete={(time) => {
@@ -371,23 +390,25 @@ const MessageController: React.FC<MessageControllerProps> = ({
 
             // Inside MessageController component
             case "question-input": {
-              const { target, items } = item.data;
-
               if (flow.length - 1 > i) {
-                return <TextMessage owner="user" texts={[`${data[target]}`]} />;
+                return (
+                  <TextMessage
+                    owner="user"
+                    key="user-question"
+                    texts={[`${data.question}`]}
+                  />
+                );
               }
 
               return (
                 <RadioQuestionInput
-                  target={target}
-                  items={items}
+                  key="question"
                   onComplete={(question) => {
                     setData((current) => ({ ...current, question }));
                     setIsNextQueued(true);
                   }}
                   onReschedule={() => {
-                    setQueueIndex(4); // Start from queIndex(4)
-                    setIsNextQueued(true);
+                    setQueueIndex(4);
                   }}
                 />
               );
