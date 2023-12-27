@@ -4,7 +4,7 @@ import TextInput from "./TextInput";
 import GridRadioInput from "./GridRadioInput";
 import DateRadioInput from "./DateRadioInput";
 import TimeRadioInput from "./TimeRadioInput";
-import RadioQuestionInput from "./RadioQuestionInput";
+import ConfirmInput from "./ConfirmInput";
 import BotTextMessage from "./BotTextMessage";
 import UserTextMessage from "./UserTextMessage";
 import { useBotContext } from "../../contexts/BotContext";
@@ -37,7 +37,11 @@ type Inputs =
       };
     }
   | {
-      type: "question-input";
+      type: "confirm-input";
+      data: {
+        target: "submission" | "phone";
+        options: [string, string];
+      };
     };
 
 type Flow = Array<
@@ -154,7 +158,11 @@ const STATIC_FLOW: Flow = [
     },
   },
   {
-    type: "question-input",
+    type: "confirm-input",
+    data: {
+      target: "submission",
+      options: ["Confirm", "Reschedule"],
+    },
   },
   {
     type: "text",
@@ -174,11 +182,19 @@ const STATIC_FLOW: Flow = [
     },
   },
   {
+    type: "confirm-input",
+    data: {
+      target: "phone",
+      options: ["Sure", "Maybe later"],
+    },
+  },
+  {
     type: "text-input",
     data: {
       target: "phone",
     },
   },
+
   {
     type: "text",
     data: {
@@ -248,15 +264,23 @@ const MessageController: React.FC<MessageControllerProps> = ({
 }) => {
   const [queueIndex, setQueueIndex] = React.useState(1);
   const [isNextQueued, setIsNextQueued] = React.useState(false);
+  const [isPhoneSkipped, setPhoneSkipped] = React.useState(false);
 
   const { data, setData } = useUserDataContext();
   const { name: botName } = useBotContext();
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const flow = React.useMemo(
-    () => collapseTexts(STATIC_FLOW.slice(0, queueIndex)),
-    [queueIndex]
-  );
+  const flow = React.useMemo(() => {
+    const slicedFlow = STATIC_FLOW.slice(0, queueIndex);
+    return collapseTexts(
+      slicedFlow.filter(
+        (item) =>
+          !isPhoneSkipped ||
+          item.type !== "text-input" ||
+          item.data.target !== "phone"
+      )
+    );
+  }, [isPhoneSkipped, queueIndex]);
 
   React.useEffect(() => {
     if (isNextQueued)
@@ -308,12 +332,13 @@ const MessageController: React.FC<MessageControllerProps> = ({
               const { target } = item.data;
 
               if (flow.length - 1 > i) {
-                return (
-                  <UserTextMessage
-                    key={`user-${target}`}
-                    texts={[`${data[target]}`]}
-                  />
-                );
+                if (data[target])
+                  return (
+                    <UserTextMessage
+                      key={`user-${target}`}
+                      texts={[`${data[target]}`]}
+                    />
+                  );
               }
               return (
                 <TextInput
@@ -395,27 +420,47 @@ const MessageController: React.FC<MessageControllerProps> = ({
               );
             }
 
-            // Inside MessageController component
-            case "question-input": {
+            case "confirm-input": {
+              const { target, options } = item.data;
               if (flow.length - 1 > i) {
                 return (
                   <UserTextMessage
-                    key="user-question"
-                    texts={[`${data.question}`]}
+                    key={`user-confirm-${target}`}
+                    texts={[
+                      target === "submission"
+                        ? options[0]
+                        : isPhoneSkipped
+                        ? options[1]
+                        : options[0],
+                    ]}
                   />
                 );
               }
 
               return (
-                <RadioQuestionInput
-                  key="question"
-                  onComplete={(question) => {
-                    setData((current) => ({ ...current, question }));
-                    setIsNextQueued(true);
-                  }}
-                  onReschedule={() => {
-                    setQueueIndex(4);
-                  }}
+                <ConfirmInput
+                  key={`confirm-${target}`}
+                  options={options}
+                  onComplete={
+                    target === "submission"
+                      ? () => {
+                          setIsNextQueued(true);
+                        }
+                      : () => {
+                          setPhoneSkipped(false);
+                          setIsNextQueued(true);
+                        }
+                  }
+                  onCancel={
+                    target === "submission"
+                      ? () => {
+                          setQueueIndex(4);
+                        }
+                      : () => {
+                          setPhoneSkipped(true);
+                          setIsNextQueued(true);
+                        }
+                  }
                 />
               );
             }

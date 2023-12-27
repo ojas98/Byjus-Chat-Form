@@ -37,7 +37,6 @@ const Chatbot: React.FC = () => {
     grade: "",
     date: "",
     time: "",
-    question: "",
     phone: "",
   });
 
@@ -46,8 +45,6 @@ const Chatbot: React.FC = () => {
   useEffect(() => {
     setBot(bots[Math.floor(Math.random() * bots.length)]);
   }, []);
-
-  console.log(bot);
 
   return (
     <UserDataContextProvider value={{ data, setData }}>

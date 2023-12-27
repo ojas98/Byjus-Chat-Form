@@ -5,7 +5,6 @@ export interface UserData {
   grade: string;
   date: string;
   time: string;
-  question: string;
   phone: string;
 }
 
