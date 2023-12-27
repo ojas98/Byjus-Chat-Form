@@ -16,7 +16,6 @@ const ConfirmInput: React.FC<ConfirmInputProps> = ({
       if (i === 0 && onComplete) {
         return () => onComplete();
       }
-
       if (i === 1 && onCancel) {
         return () => onCancel();
       }

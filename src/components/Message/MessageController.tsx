@@ -445,8 +445,10 @@ const MessageController: React.FC<MessageControllerProps> = ({
                     target === "submission"
                       ? () => {
                           setIsNextQueued(true);
+                          console.log("Cancelling submission");
                         }
                       : () => {
+                          console.log("Cancelling phone input");
                           setPhoneSkipped(false);
                           setIsNextQueued(true);
                         }
