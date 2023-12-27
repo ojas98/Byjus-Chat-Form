@@ -1,11 +1,13 @@
-import React, { useEffect, useRef } from "react";
-import TextMessage from "./TextMessage";
+import React, { FC, useEffect, useRef } from "react";
 import { UserData, useUserDataContext } from "../../contexts/UserDataContext";
 import TextInput from "./TextInput";
 import GridRadioInput from "./GridRadioInput";
 import DateRadioInput from "./DateRadioInput";
 import TimeRadioInput from "./TimeRadioInput";
 import RadioQuestionInput from "./RadioQuestionInput";
+import BotTextMessage from "./BotTextMessage";
+import UserTextMessage from "./UserTextMessage";
+import { useBotContext } from "../../contexts/BotContext";
 
 type Inputs =
   | {
@@ -42,8 +44,7 @@ type Flow = Array<
   | {
       type: "text";
       data: {
-        owner: "user" | "bot";
-        text: string;
+        text: string | FC<UserData & { botName: string }>;
       };
     }
   | Inputs
@@ -52,8 +53,7 @@ type CollapsedFlow = Array<
   | {
       type: "text";
       data: {
-        owner: "user" | "bot";
-        texts: string[];
+        texts: (string | FC<UserData & { botName: string }>)[];
       };
     }
   | Inputs
@@ -63,14 +63,17 @@ const STATIC_FLOW: Flow = [
   {
     type: "text",
     data: {
-      owner: "bot",
-      text: "Hi! I'm {botName} from BYJU’S. I am here to help you book your free math demo class.",
+      text: ({ botName }) => (
+        <>
+          Hi! I'm {botName} from BYJU’S. I am here to help you book your free
+          math demo class.
+        </>
+      ),
     },
   },
   {
     type: "text",
     data: {
-      owner: "bot",
       text: "Please share your Email ID.",
     },
   },
@@ -83,7 +86,6 @@ const STATIC_FLOW: Flow = [
   {
     type: "text",
     data: {
-      owner: "bot",
       text: "Please select the grade.",
     },
   },
@@ -107,7 +109,6 @@ const STATIC_FLOW: Flow = [
   {
     type: "text",
     data: {
-      owner: "bot",
       text: "Now, select a date",
     },
   },
@@ -120,7 +121,6 @@ const STATIC_FLOW: Flow = [
   {
     type: "text",
     data: {
-      owner: "bot",
       text: "Now, select a time slot",
     },
   },
@@ -145,8 +145,12 @@ const STATIC_FLOW: Flow = [
   {
     type: "text",
     data: {
-      owner: "bot",
-      text: "Please confirm your booking for {time} on {date}.",
+      text: ({ time, date }) => (
+        <>
+          Please confirm your booking for<strong> {time} </strong> on
+          <strong> {date} </strong>.
+        </>
+      ),
     },
   },
   {
@@ -155,14 +159,17 @@ const STATIC_FLOW: Flow = [
   {
     type: "text",
     data: {
-      owner: "bot",
-      text: "Great! Your math demo class has been booked for {time} on {date}.",
+      text: ({ time, date }) => (
+        <>
+          Great your math demo class is booked for <strong> {time} </strong> on
+          <strong> {date} </strong>.
+        </>
+      ),
     },
   },
   {
     type: "text",
     data: {
-      owner: "bot",
       text: "To ensure you don't miss out on your upcoming demo class, could you please share your contact number with us?",
     },
   },
@@ -175,14 +182,24 @@ const STATIC_FLOW: Flow = [
   {
     type: "text",
     data: {
-      owner: "bot",
-      text: "Here's a short video on how our 1:1 online math classes work: https://rb.gy/9ms1qt.",
+      text: () => (
+        <>
+          Awesome! Here's a short video on how our 1:1 online math classes work:{" "}
+          <a
+            href="https://rb.gy/9ms1qt"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "blue", textDecoration: "underline" }}
+          >
+            Discover Byju's Math Companion
+          </a>
+        </>
+      ),
     },
   },
   {
     type: "text",
     data: {
-      owner: "bot",
       text: "See you in class and have a great day!",
     },
   },
@@ -200,7 +217,6 @@ function collapseTexts(flow: Flow): CollapsedFlow {
       collapsed.push({
         type: "text",
         data: {
-          owner: item.data.owner,
           texts: [item.data.text],
         },
       });
@@ -208,11 +224,10 @@ function collapseTexts(flow: Flow): CollapsedFlow {
     }
 
     const last = collapsed[collapsed.length - 1];
-    if (last.type !== "text" || last.data.owner !== item.data.owner) {
+    if (last.type !== "text") {
       collapsed.push({
         type: "text" as const,
         data: {
-          owner: item.data.owner,
           texts: [item.data.text],
         },
       });
@@ -235,6 +250,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
   const [isNextQueued, setIsNextQueued] = React.useState(false);
 
   const { data, setData } = useUserDataContext();
+  const { name: botName } = useBotContext();
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const flow = React.useMemo(
@@ -247,11 +263,6 @@ const MessageController: React.FC<MessageControllerProps> = ({
       setQueueIndex((current) => Math.min(current + 1, STATIC_FLOW.length));
     setIsNextQueued(false);
   }, [isNextQueued]);
-
-  React.useEffect(() => {
-    const last = flow[flow.length - 1];
-    if (last.type === "text") setIsNextQueued(true);
-  }, [flow]);
 
   React.useEffect(() => {
     if (queueIndex === STATIC_FLOW.length) {
@@ -273,22 +284,22 @@ const MessageController: React.FC<MessageControllerProps> = ({
   return (
     <div
       // Set a maximum height for scrolling
-      className="flex flex-col justify-end p-6 gap-6 min-h-full"
+      className="flex flex-col justify-end p-6 gap-6 min-h-full relative"
     >
       <>
         {flow.map((item, i) => {
           switch (item.type) {
             case "text": {
-              const { owner, texts } = item.data;
+              const { texts } = item.data;
               const formattedTexts = texts.map((text) =>
-                replacePlaceholders(text, data)
+                typeof text === "string" ? text : text({ ...data, botName })
               );
 
               return (
-                <TextMessage
-                  owner={owner}
+                <BotTextMessage
                   texts={formattedTexts}
-                  key={`${owner}-${formattedTexts.join(".")}`}
+                  key={`bot-${formattedTexts.join(".")}`}
+                  onComplete={() => setIsNextQueued(true)}
                 />
               );
             }
@@ -298,8 +309,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
 
               if (flow.length - 1 > i) {
                 return (
-                  <TextMessage
-                    owner="user"
+                  <UserTextMessage
                     key={`user-${target}`}
                     texts={[`${data[target]}`]}
                   />
@@ -322,8 +332,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
 
               if (flow.length - 1 > i) {
                 return (
-                  <TextMessage
-                    owner="user"
+                  <UserTextMessage
                     key={`user-${target}`}
                     texts={[`${data[target]}`]}
                   />
@@ -345,9 +354,8 @@ const MessageController: React.FC<MessageControllerProps> = ({
             case "date-radio-input": {
               if (flow.length - 1 > i) {
                 return (
-                  <TextMessage
+                  <UserTextMessage
                     key="user-date"
-                    owner="user"
                     texts={[`${data[item.data.target]}`]}
                   />
                 );
@@ -368,8 +376,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
 
               if (flow.length - 1 > i) {
                 return (
-                  <TextMessage
-                    owner="user"
+                  <UserTextMessage
                     key={`user-${target}`}
                     texts={[`${data[target]}`]}
                   />
@@ -392,8 +399,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
             case "question-input": {
               if (flow.length - 1 > i) {
                 return (
-                  <TextMessage
-                    owner="user"
+                  <UserTextMessage
                     key="user-question"
                     texts={[`${data.question}`]}
                   />
@@ -419,15 +425,9 @@ const MessageController: React.FC<MessageControllerProps> = ({
           }
         })}
       </>
-      <div ref={chatEndRef}></div>
+      <div className="h-0 absolute bottom-0" ref={chatEndRef}></div>
     </div>
   );
 };
-
-function replacePlaceholders(text: string, data: UserData): string {
-  text = text.replace(/{time}/g, data.time || "");
-  text = text.replace(/{date}/g, data.date || "");
-  return text;
-}
 
 export default MessageController;
