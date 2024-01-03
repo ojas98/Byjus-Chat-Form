@@ -189,6 +189,12 @@ const STATIC_FLOW: Flow = [
     },
   },
   {
+    type: "text",
+    data: {
+      text: "Please share your phone number",
+    },
+  },
+  {
     type: "text-input",
     data: {
       target: "phone",

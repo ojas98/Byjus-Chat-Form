@@ -1,3 +1,5 @@
+import { fontFamily } from "tailwindcss/defaultTheme";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -16,6 +18,9 @@ export default {
       gridTemplateColumns: {
         radio: "repeat(auto-fit,minmax(var(--min-col-width, 6rem), 1fr))",
       },
+    },
+    fontFamily: {
+      sans: ["Proxima Soft", ...fontFamily.sans],
     },
   },
   plugins: [],
