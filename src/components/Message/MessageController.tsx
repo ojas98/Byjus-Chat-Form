@@ -53,6 +53,7 @@ type Flow = Array<
     }
   | Inputs
 >;
+
 type CollapsedFlow = Array<
   | {
       type: "text";
@@ -237,7 +238,7 @@ function collapseTexts(flow: Flow): CollapsedFlow {
 
     if (collapsed.length === 0) {
       collapsed.push({
-        type: "text",
+        type: "text" || "New-text",
         data: {
           texts: [item.data.text],
         },
@@ -279,12 +280,18 @@ const MessageController: React.FC<MessageControllerProps> = ({
   const flow = React.useMemo(() => {
     const slicedFlow = STATIC_FLOW.slice(0, queueIndex);
     return collapseTexts(
-      slicedFlow.filter(
-        (item) =>
-          !isPhoneSkipped ||
-          item.type !== "text-input" ||
-          item.data.target !== "phone"
-      )
+      slicedFlow.filter((item) => {
+        if (!isPhoneSkipped) return true;
+        else {
+          if (
+            (item.type === "text-input" && item.data.target === "phone") ||
+            (item.type === "text" &&
+              item.data.text === "Please share your phone number")
+          )
+            return false;
+          return true;
+        }
+      })
     );
   }, [isPhoneSkipped, queueIndex]);
 
