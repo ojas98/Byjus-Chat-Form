@@ -152,7 +152,7 @@ const STATIC_FLOW: Flow = [
     data: {
       text: ({ time, date }) => (
         <>
-          Please confirm your booking for<strong> {time} </strong> on
+          Please Confirm your booking for<strong> {time} </strong> on
           <strong> {date} </strong>.
         </>
       ),
