@@ -6,7 +6,7 @@ import vConsolePlugin from "vite-plugin-simple-vconsole";
 export default defineConfig({
   plugins: [
     vConsolePlugin({
-      enable: false,
+      enable: true,
     }),
     react(),
   ],
