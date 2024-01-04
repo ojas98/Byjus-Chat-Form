@@ -17,20 +17,20 @@
     font-family: "Proxima Soft";
     font-weight: 400;
     font-style: normal;
-    src: url("fonts/proxima-soft-regular.ttf") format("truetype"),
-      url("fonts/proxima-soft-regular.woff2") format("woff2"),
-      url("fonts/proxima-soft-regular.woff") format("woff"),
-      url("fonts/proxima-soft-regular.eot") format("eot"),
-      url("fonts/proxima-soft-regular.otf") format("otf");
+    src: url("/fonts/proxima-soft-regular.ttf") format("truetype"),
+      url("/fonts/proxima-soft-regular.woff2") format("woff2"),
+      url("/fonts/proxima-soft-regular.woff") format("woff"),
+      url("/fonts/proxima-soft-regular.eot") format("eot"),
+      url("/fonts/proxima-soft-regular.otf") format("otf");
   }
   @font-face {
     font-family: "Proxima Soft";
     font-weight: 700;
     font-style: normal;
-    src: url("fonts/proxima-soft-bold.ttf") format("truetype"),
-      url("fonts/proxima-soft-bold.woff2") format("woff2"),
-      url("fonts/proxima-soft-bold.woff") format("woff"),
-      url("fonts/proxima-soft-bold.eot") format("eot"),
-      url("fonts/proxima-soft-bold.otf") format("otf");
+    src: url("/fonts/proxima-soft-bold.ttf") format("truetype"),
+      url("/fonts/proxima-soft-bold.woff2") format("woff2"),
+      url("/fonts/proxima-soft-bold.woff") format("woff"),
+      url("/fonts/proxima-soft-bold.eot") format("eot"),
+      url("/fonts/proxima-soft-bold.otf") format("otf");
   }
 }
