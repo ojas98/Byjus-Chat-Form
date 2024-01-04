@@ -335,7 +335,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
               return (
                 <BotTextMessage
                   texts={formattedTexts}
-                  key={`bot-${formattedTexts.join(".")}`}
+                  key={`bot-${i}`}
                   onComplete={() => setIsNextQueued(true)}
                 />
               );
@@ -458,10 +458,8 @@ const MessageController: React.FC<MessageControllerProps> = ({
                     target === "submission"
                       ? () => {
                           setIsNextQueued(true);
-                          console.log("Cancelling submission");
                         }
                       : () => {
-                          console.log("Cancelling phone input");
                           setPhoneSkipped(false);
                           setIsNextQueued(true);
                         }
@@ -473,7 +471,7 @@ const MessageController: React.FC<MessageControllerProps> = ({
                         }
                       : () => {
                           setPhoneSkipped(true);
-                          setIsNextQueued(true);
+                          setQueueIndex((index) => index + 2);
                         }
                   }
                 />

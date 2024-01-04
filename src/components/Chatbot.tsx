@@ -11,17 +11,17 @@ const G_FORM_APP =
   "https://script.google.com/macros/s/AKfycbwo8hvSpvR3gKxkU94BQ_pzPYmNde3uvl_9RZr54aVYu8vUUt99BkG72t2ase5sIexIjg/exec";
 
 async function submitData(data: UserData) {
+  console.log("Submitting...");
+  console.log(data);
   try {
     const body = { ...data, sheet: "Sheet4" };
     const response = await fetch(G_FORM_APP, {
       method: "POST",
       body: JSON.stringify(body),
     });
-
     if (!response.ok) {
       throw new Error(`Failed to submit data. Status: ${response.status}`);
     }
-
     // You might want to handle the response here if needed
     const responseData = await response.json();
     console.log("Form submission successful:", responseData);
